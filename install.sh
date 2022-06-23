@@ -67,12 +67,12 @@ case ${distro_name} in
     echo "OK, start installing on actual LTS ${distro_name} ${distro_version} .."
     ansible_install_newstyle
     ;;
-  "21.04")
+  "21.04" | "22.04")
     echo "OK, start installing Ansible from .deb on ${distro_name} ${distro_version} .."
     ansible_2_9_install_deb
     ;;
   *)
-    echo "Could not install Headwind Remote on your Ubuntu version: $distro_version. We support only LTS Ubuntu versions: 16.04, 18.04, 20.04, 21.04"
+    echo "Could not install Headwind Remote on your Ubuntu version: $distro_version. We support only LTS Ubuntu versions: 16.04, 18.04, 20.04, 21.04, 22.04"
     exit 1
     ;;
   esac
