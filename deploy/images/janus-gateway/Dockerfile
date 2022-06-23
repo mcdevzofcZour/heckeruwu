@@ -38,7 +38,7 @@ RUN mkdir /tmp/sources
 # Build libnice
 RUN cd /tmp/sources/ && git clone https://gitlab.freedesktop.org/libnice/libnice.git/ \
     && cd libnice \
-    && git checkout tags/0.1.18 \
+    && git checkout tags/0.1.19 \
 #   for versions >= 0.1.18 (Using meson & ninja)
     && meson builddir \
     && ninja -C builddir \
@@ -50,16 +50,16 @@ RUN cd /tmp/sources/ && git clone https://gitlab.freedesktop.org/libnice/libnice
 #    && make && make install
 
 # Build libsrtp
-RUN cd /tmp/sources/ && wget https://github.com/cisco/libsrtp/archive/v2.3.0.tar.gz \
-    && tar xfv v2.3.0.tar.gz \
-    && cd libsrtp-2.3.0 \
+RUN cd /tmp/sources/ && wget https://github.com/cisco/libsrtp/archive/v2.4.2.tar.gz \
+    && tar xfv v2.4.2.tar.gz \
+    && cd libsrtp-2.4.2 \
     && ./configure --prefix=/usr --enable-openssl \
     && make shared_library && make install
 
 # Build usrsctp (for DataChannels support)
 RUN cd /tmp/sources/ && git clone https://github.com/sctplab/usrsctp \
     && cd usrsctp \
-    && git checkout df49eb6e19b84905d0b20dd79edf81ec7a76f133 \
+    && git checkout 0.9.5.0 \
     && ./bootstrap \
     && ./configure --prefix=/usr \
     && make && make install
@@ -67,7 +67,7 @@ RUN cd /tmp/sources/ && git clone https://github.com/sctplab/usrsctp \
 # Build libwebsockets (for WebSockets transport support)
 RUN cd /tmp/sources/ && git clone https://github.com/warmcat/libwebsockets.git \
     && cd libwebsockets \
-    && git checkout v4.0.9 \
+    && git checkout v4.3.2 \
     && mkdir build && cd build \
     && cmake -DLWS_MAX_SMP=1 -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_FLAGS="-fpic" .. \
     && make && make install
@@ -85,7 +85,7 @@ RUN cd /tmp/sources/ && git clone https://boringssl.googlesource.com/boringssl \
 # Build Janus Gateway
 RUN cd /tmp/sources/ && git clone https://github.com/meetecho/janus-gateway.git \
     && cd janus-gateway \
-    && git checkout v0.10.7 \
+    && git checkout v0.12.3 \
     && sh autogen.sh \
     && ./configure \
       # General
@@ -115,7 +115,7 @@ RUN apt-get -y update \
 	&& apt-get autoremove -y && apt-get clean && rm -r /var/lib/apt/lists/*
 
 # COPY libnice
-COPY --from=BUILD /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0 /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0
+COPY --from=BUILD /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0 /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0
 
 # COPY to /usr/lib
 COPY --from=BUILD \
@@ -124,27 +124,27 @@ COPY --from=BUILD \
   /usr/lib/libsrtp2.so.1 \
   # usrsctp
   /usr/lib/libusrsctp.la \
-  /usr/lib/libusrsctp.so.1.0.0 \
+  /usr/lib/libusrsctp.so.2.0.0 \
   # libwebsockets
-  /usr/lib/libwebsockets.so.16 \
+  /usr/lib/libwebsockets.so.19 \
   ## DESTINATION
   /usr/lib/
 
 # RUN stuff
 RUN \
   # libnice symlinks
-    ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0 /usr/local/lib/x86_64-linux-gnu/libnice.so.10 \
- && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0 /usr/local/lib/x86_64-linux-gnu/libnice.so \
- && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0 /usr/lib/libnice.so.10.11.0 \
- && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0 /usr/lib/libnice.so.10 \
- && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.11.0 /usr/lib/libnice.so \
+    ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0 /usr/local/lib/x86_64-linux-gnu/libnice.so.10 \
+ && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0 /usr/local/lib/x86_64-linux-gnu/libnice.so \
+ && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0 /usr/lib/libnice.so.10.12.0 \
+ && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0 /usr/lib/libnice.so.10 \
+ && ln -s /usr/local/lib/x86_64-linux-gnu/libnice.so.10.12.0 /usr/lib/libnice.so \
   # libsrtp symlinks
  && ln -s /usr/lib/libsrtp2.so.1 /usr/lib/libsrtp2.so \
   # usrsctp symlinks
- && ln -s /usr/lib/libusrsctp.so.1.0.0 /usr/lib/libusrsctp.so \
- && ln -s /usr/lib/libusrsctp.so.1.0.0 /usr/lib/libusrsctp.so.1 \
+ && ln -s /usr/lib/libusrsctp.so.2.0.0 /usr/lib/libusrsctp.so \
+ && ln -s /usr/lib/libusrsctp.so.2.0.0 /usr/lib/libusrsctp.so.2 \
   # libwebsockets symlinks
- && ln -s /usr/lib/libwebsockets.so.16 /usr/lib/libwebsockets.so \
+ && ln -s /usr/lib/libwebsockets.so.19 /usr/lib/libwebsockets.so \
   # Janus config dir
  && mkdir /usr/local/etc/janus
 
@@ -167,3 +167,4 @@ COPY --from=BUILD /usr/local/share/janus /usr/local/share/janus
 # EXPOSE 10000-10200/udp  # default ports, but disabled due to "host" network mode
 
 CMD ["/usr/local/bin/janus"]
+

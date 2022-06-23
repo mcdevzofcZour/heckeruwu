@@ -1,5 +1,5 @@
 janus_image_name: "headwindmdm/janus-gateway"
-janus_image_tag: "0.10.7"
+janus_image_tag: "0.12.3"
 
 node_gulp_builder_image_publisher: "headwindmdm"
 node_gulp_builder_image_name: "node-gulp-builder"
